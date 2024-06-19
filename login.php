@@ -1,15 +1,29 @@
 <?php
+$showerror = false;
+
+$login = false;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require "partials/conn.php";
     $email = $_POST["useremail"];
     $pass = $_POST["userpass"];
-    $sqlselect = "select * from info where email = '$email'";
+    $sqlselect = "select * from info where Email = '$email'";
     $result = mysqli_query($con, $sqlselect);
     $row = mysqli_num_rows($result);
     if ($row == 1) {
         while ($item = mysqli_fetch_assoc($result)) {
-            password_verify($pass, $item["Password"]);
+            password_verify($pass, $item["PASSWORD"]);
+
+            $login = true;
+
+            session_start();
+
+            $_SESSION["email"] = $email;
+            $_SESSION["username"] = $item["NAME"];
+            $_SESSION["logIN"] = true;
+
+
+
             header("location:welcome.php");
         }
     }
@@ -51,6 +65,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
+
+    <?php
+    require "partials/navbar.php";
+    ?>
+
+    <?php
+    if ($login) {
+        echo "<div class='alert alert-success alert-dismissible fade show' role='alert'>
+            <strong>Success!</strong> Your account successfully login.
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+           </div>";
+    }
+
+
+
+    ?>
+
+    <?php
+    if ($showerror) {
+        echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+            <strong>Error !</strong> ." . $showerror . "
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+           </div>";
+    }
+
+
+
+    ?>
+
+
+
+
     <div class="container">
 
         <form method="post" action="login.php">

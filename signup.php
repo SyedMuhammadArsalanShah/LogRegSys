@@ -1,5 +1,7 @@
 <?php
+$showerror = false;
 
+$login = false;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require "partials/conn.php";
 
@@ -9,14 +11,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $pass = $_POST["userpass"];
     $cpass = $_POST["usercpass"];
 
-    $sqlselect = "select * from info where email = '$email'";
+    $sqlselect = "select * from info where Email = '$email'";
 
     $result = mysqli_query($con, $sqlselect);
 
     $row = mysqli_num_rows($result);
 
     if ($row > 0) {
-        echo " already exists";
+        // echo " already exists";
+        $showerror = true;
     } else {
         if ($pass == $cpass) {
 
@@ -25,7 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sqlins = "INSERT INTO `info`( `Name`, `Email`, `Password`) VALUES ('$name','$email','$hash')";
             $res = mysqli_query($con, $sqlins);
             if ($res) {
-                echo "inserted";
+                // echo "inserted";
+                $login = true;
             }
         }
     }
@@ -67,6 +71,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
+
+    <?php
+    require "partials/navbar.php";
+    ?>
+
+    <?php
+    if ($login) {
+        echo "<div class='alert alert-success alert-dismissible fade show' role='alert'>
+            <strong>Success!</strong> Your account successfully created.
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+           </div>";
+    }
+
+
+
+    ?>
+
+    <?php
+    if ($showerror) {
+        echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+            <strong>Already Exists !</strong> ." . $showerror . "
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+           </div>";
+    }
+
+
+
+    ?>
+
     <div class="container">
 
         <form method="post" action="signup.php">
